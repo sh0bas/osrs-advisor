@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import './App.css';
+import axios from 'axios';
 
 // Mock data for demo purposes
 const mockPlayerData = {
@@ -52,20 +53,60 @@ function App() {
     setLoading(true);
     setError('');
 
-    // WiseOldMan API goes here later
-    // For now, dummy data is used
-    setTimeout(() => {
-      if (username.toLowerCase() === 'notFound' || username.Length < 3) {
-        setError('Player not found.');
-        setPlayerData(null);
-        setStatsOpen(false);
-      } else {
-        setPlayerData(mockPlayerData);
+    try {
+      // First, try to get the player from WiseOldMan
+      const response = await axios.get(`https://api.wiseoldman.net/v2/players/${username}`);
+
+      if (response.data) {
+        // Format the data to match our component's expected structure
+        const formattedData = {
+          displayName: response.data.displayName,
+          overallExperience: response.data.exp,
+          skills: Object.entries(response.data.latestSnapshot.data.skills).map(([skill, data]) => ({
+            name: skill.charAt(0).toUpperCase() + skill.slice(1),
+            level: data.level,
+            experience: data.experience
+          })),
+          recentActivities: [] // We'll fetch this separately if needed
+        };
+
+        // Optionally fetch recent gains
+        try {
+          const gainsResponse = await axios.get(`https://api.wiseoldman.net/v2/players/${username}/gained`, {
+            params: { period: 'week' }
+          });
+
+          if (gainsResponse.data?.data?.skills) {
+            const topGains = Object.entries(gainsResponse.data.data.skills)
+              .filter(([_, data]) => data.experience > 0)
+              .sort((a, b) => b[1].experience - a[1].experience)
+              .slice(0, 3)
+              .map(([skill, data]) => `Gained ${(data.experience / 1000).toFixed(0)}k ${skill.charAt(0).toUpperCase() + skill.slice(1)} XP`);
+
+            formattedData.recentActivities = topGains;
+          }
+        } catch (gainsError) {
+          // If gains fail, continue without them
+          console.error('Failed to fetch gains:', gainsError);
+        }
+
+        setPlayerData(formattedData);
         setStatsOpen(true);
       }
+    } catch (error) {
+      if (error.response?.status === 404) {
+        setError('Player not found. Make sure the username is correct.');
+      } else if (error.response?.status === 400) {
+        setError('Invalid username format.');
+      } else {
+        setError('Failed to fetch player data. Please try again later.');
+      }
+      setPlayerData(null);
+      setStatsOpen(false);
+    } finally {
       setLoading(false);
-    }, 1000);
-  }
+    }
+  };
 
   const getAIRecommendation = async () => {
     if (!apiKey) {
@@ -202,6 +243,11 @@ function App() {
                 <p className="text-red-200 text-center">{error}</p>
               </div>
             )}
+
+            {/* Update Notice */}
+            <div className="text-center text-gray-400 text-sm max-w-2xl mx-auto mb-4">
+              <p>Note: If the player hasn't been tracked recently, you may need to update them on WiseOldMan first.</p>
+            </div>
 
             {/* AI Recommendation */}
             {recommendation && (
