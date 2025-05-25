@@ -46,17 +46,26 @@ function App() {
   const [showApiKeyInput, setShowApiKeyInput] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [statsOpen, setStatsOpen] = useState(false);
+  const [error, setError] = useState('');
 
   const fetchPlayerData = async () => {
     setLoading(true);
-    // In real implementation, this would call WiseOldMan API
-    // For demo, using mock data
+    setError('');
+
+    // WiseOldMan API goes here later
+    // For now, dummy data is used
     setTimeout(() => {
-      setPlayerData(mockPlayerData);
+      if (username.toLowerCase() === 'notFound' || username.Length < 3) {
+        setError('Player not found.');
+        setPlayerData(null);
+        setStatsOpen(false);
+      } else {
+        setPlayerData(mockPlayerData);
+        setStatsOpen(true);
+      }
       setLoading(false);
-      setStatsOpen(true);
     }, 1000);
-  };
+  }
 
   const getAIRecommendation = async () => {
     if (!apiKey) {
@@ -186,6 +195,13 @@ function App() {
                 </button>
               </div>
             </div>
+
+            {/* Error Message */}
+            {error && (
+              <div className="bg-red-900 border border-red-700 rounded-lg p-4 mb-6 max-w-2xl mx-auto">
+                <p className="text-red-200 text-center">{error}</p>
+              </div>
+            )}
 
             {/* AI Recommendation */}
             {recommendation && (
