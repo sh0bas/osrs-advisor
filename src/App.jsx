@@ -2,42 +2,6 @@ import { useState } from 'react';
 import './App.css';
 import axios from 'axios';
 
-// Mock data for demo purposes
-const mockPlayerData = {
-  displayName: "Lynx Titan",
-  overallExperience: 4600000000,
-  skills: [
-    { name: "Attack", level: 99, experience: 200000000 },
-    { name: "Hitpoints", level: 99, experience: 200000000 },
-    { name: "Mining", level: 99, experience: 200000000 },
-    { name: "Strength", level: 99, experience: 200000000 },
-    { name: "Agility", level: 99, experience: 200000000 },
-    { name: "Smithing", level: 99, experience: 200000000 },
-    { name: "Defence", level: 99, experience: 200000000 },
-    { name: "Herblore", level: 99, experience: 200000000 },
-    { name: "Fishing", level: 99, experience: 200000000 },
-    { name: "Ranged", level: 99, experience: 200000000 },
-    { name: "Thieving", level: 99, experience: 200000000 },
-    { name: "Cooking", level: 99, experience: 200000000 },
-    { name: "Prayer", level: 99, experience: 200000000 },
-    { name: "Crafting", level: 99, experience: 200000000 },
-    { name: "Firemaking", level: 99, experience: 200000000 },
-    { name: "Magic", level: 99, experience: 200000000 },
-    { name: "Fletching", level: 99, experience: 200000000 },
-    { name: "Woodcutting", level: 99, experience: 200000000 },
-    { name: "Runecrafting", level: 99, experience: 200000000 },
-    { name: "Slayer", level: 99, experience: 200000000 },
-    { name: "Farming", level: 99, experience: 200000000 },
-    { name: "Construction", level: 99, experience: 200000000 },
-    { name: "Hunter", level: 99, experience: 200000000 }
-  ],
-  recentActivities: [
-    "Gained 150k Slayer XP",
-    "Completed 50 Vorkath kills",
-    "Gained 80k Ranged XP"
-  ]
-};
-
 function App() {
   const [username, setUsername] = useState('');
   const [playerData, setPlayerData] = useState(null);
