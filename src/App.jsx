@@ -47,12 +47,20 @@ function App() {
             params: { period: 'week' }
           });
 
-          if (gainsResponse.data?.data?.skills) {
-            const topGains = Object.entries(gainsResponse.data.data.skills)
-              .filter(([_, data]) => data.experience > 0)
+          // The gains data is directly in gainsResponse.data, not gainsResponse.data.data
+          if (gainsResponse.data?.skills) {
+            const topGains = Object.entries(gainsResponse.data.skills)
+              .filter(([_, data]) => data.experience && data.experience > 0)
               .sort((a, b) => b[1].experience - a[1].experience)
               .slice(0, 3)
-              .map(([skill, data]) => `Gained ${(data.experience / 1000).toFixed(0)}k ${skill.charAt(0).toUpperCase() + skill.slice(1)} XP`);
+              .map(([skill, data]) => {
+                const xpGained = data.experience;
+                if (xpGained >= 1000000) {
+                  return `Gained ${(xpGained / 1000000).toFixed(1)}M ${skill.charAt(0).toUpperCase() + skill.slice(1)} XP`;
+                } else {
+                  return `Gained ${Math.floor(xpGained / 1000)}k ${skill.charAt(0).toUpperCase() + skill.slice(1)} XP`;
+                }
+              });
 
             if (topGains.length > 0) {
               formattedData.recentActivities = topGains;
@@ -61,8 +69,8 @@ function App() {
             }
           }
         } catch (gainsError) {
-          // If gains fail, continue without them
           console.error('Failed to fetch gains:', gainsError);
+          formattedData.recentActivities = ['Activity data unavailable. Try updating the player on WiseOldMan.'];
         }
 
         formattedData.recentActivities = ['Activity data unavailable. Try updating the player on WiseOldMan.'];
