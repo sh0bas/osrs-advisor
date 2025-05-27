@@ -26,11 +26,18 @@ function App() {
         const formattedData = {
           displayName: response.data.displayName,
           overallExperience: response.data.exp,
-          skills: Object.entries(response.data.latestSnapshot.data.skills).map(([skill, data]) => ({
-            name: skill.charAt(0).toUpperCase() + skill.slice(1),
-            level: data.level,
-            experience: data.experience
-          })),
+          skills: Object.entries(response.data.latestSnapshot.data.skills)
+            .filter(([skill]) => skill !== 'overall')
+            .map(([skill, data]) => ({
+              name: skill.charAt(0).toUpperCase() + skill.slice(1),
+              level: data.level,
+              experience: data.experience
+            }))
+            .concat([{
+              name: 'Overall',
+              level: response.data.latestSnapshot.data.skills.overall.level,
+              experience: response.data.latestSnapshot.data.skills.overall.experience
+            }]),
           recentActivities: [] // We'll fetch this separately if needed
         };
 
@@ -47,11 +54,28 @@ function App() {
               .slice(0, 3)
               .map(([skill, data]) => `Gained ${(data.experience / 1000).toFixed(0)}k ${skill.charAt(0).toUpperCase() + skill.slice(1)} XP`);
 
-            formattedData.recentActivities = topGains;
+            if (topGains.length > 0) {
+              formattedData.recentActivities = topGains;
+            } else {
+              formattedData.recentActivities = ['No recent activity found. Player may need to be updated on WiseOldMan.'];
+            }
           }
         } catch (gainsError) {
           // If gains fail, continue without them
           console.error('Failed to fetch gains:', gainsError);
+        }
+
+        formattedData.recentActivities = ['Activity data unavailable. Try updating the player on WiseOldMan.'];
+        // If still no activities, check last updated time
+        if (formattedData.recentActivities.length === 0) {
+          const lastUpdated = new Date(response.data.updatedAt);
+          const hoursSinceUpdate = (Date.now() - lastUpdated) / (1000 * 60 * 60);
+
+          if (hoursSinceUpdate > 24) {
+            formattedData.recentActivities = [`Last updated ${Math.floor(hoursSinceUpdate / 24)} days ago. Update on WiseOldMan for recent activity.`];
+          } else {
+            formattedData.recentActivities = ['No recent gains detected.'];
+          }
         }
 
         setPlayerData(formattedData);
