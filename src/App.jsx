@@ -54,7 +54,7 @@ function App() {
             const topGains = Object.entries(gainsResponse.data.data.skills)
               .filter(([skill, data]) => data.experience?.gained > 0)
               .sort((a, b) => b[1].experience.gained - a[1].experience.gained)
-              .slice(0, 3)
+              .slice(0, 5)
               .map(([skill, data]) => {
                 const xpGained = data.experience.gained;
                 if (xpGained >= 1000000) {
@@ -160,19 +160,6 @@ function App() {
                 className="block px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded-md text-sm transition-colors">
                 💰 GE Prices
               </a>
-            </div>
-          </div>
-
-          {/* Quick Calculators */}
-          <div>
-            <h3 className="text-sm font-semibold text-gray-400 mb-2">Calculators</h3>
-            <div className="space-y-2">
-              <button className="w-full text-left px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded-md text-sm transition-colors">
-                🧮 XP Calculator
-              </button>
-              <button className="w-full text-left px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded-md text-sm transition-colors">
-                ⚔️ Combat Level Calc
-              </button>
             </div>
           </div>
 
