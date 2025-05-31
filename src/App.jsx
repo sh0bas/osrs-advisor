@@ -48,9 +48,13 @@ function App() {
             params: { period: 'week' }
           });
 
-          console.log('Gains response:', gainsResponse.data); // Debug log
+          console.log('Gains response:', gainsResponse.data); // Keep this to see the structure
 
-          // The correct path is gainsResponse.data.data.skills
+          // Initialize arrays
+          formattedData.recentActivities = [];
+          const activities = [];
+
+          // Get skill gains
           if (gainsResponse.data?.data?.skills) {
             const topGains = Object.entries(gainsResponse.data.data.skills)
               .filter(([skill, data]) => data.experience?.gained > 0)
@@ -64,15 +68,25 @@ function App() {
                   return `Gained ${Math.floor(xpGained / 1000)}k ${skill.charAt(0).toUpperCase() + skill.slice(1)} XP`;
                 }
               });
-
-            if (topGains.length > 0) {
-              formattedData.recentActivities = topGains;
-            } else {
-              formattedData.recentActivities = ['No recent gains in the past week.'];
-            }
-          } else {
-            formattedData.recentActivities = ['No activity data available.'];
+            activities.push(...topGains);
           }
+
+          // Get boss kills
+          if (gainsResponse.data?.data?.bosses) {
+            const bossKills = Object.entries(gainsResponse.data.data.bosses)
+              .filter(([boss, data]) => data.kills?.gained > 0)
+              .sort((a, b) => b[1].kills.gained - a[1].kills.gained)
+              .slice(0, 3)
+              .map(([boss, data]) => {
+                const bossName = boss.split('_').map(word =>
+                  word.charAt(0).toUpperCase() + word.slice(1)
+                ).join(' ');
+                return `Killed ${data.kills.gained} ${bossName}`;
+              });
+            activities.push(...bossKills);
+          }
+
+          formattedData.recentActivities = activities.length > 0 ? activities : ['No recent activity found.'];
         } catch (gainsError) {
           console.error('Failed to fetch gains:', gainsError);
           formattedData.recentActivities = ['Activity data unavailable. Try updating the player on WiseOldMan.'];
