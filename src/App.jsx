@@ -193,22 +193,29 @@ function App() {
 
             {/* Username Input */}
             <div className="bg-gray-800 rounded-lg p-6 mb-6 border border-gray-700 max-w-2xl mx-auto">
-              <div className="flex gap-4">
-                <input
-                  type="text"
-                  placeholder="Enter your RuneScape username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  className="flex-1 px-4 py-2 bg-gray-900 border border-gray-600 rounded-md text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
-                />
-                <button
-                  onClick={fetchPlayerData}
-                  disabled={!username || loading}
-                  className="px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-md font-semibold transition-colors"
-                >
-                  {loading ? 'Loading...' : 'Fetch Stats'}
-                </button>
-              </div>
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                if (username && !loading) {
+                  fetchPlayerData();
+                }
+              }}>
+                <div className="flex gap-4">
+                  <input
+                    type="text"
+                    placeholder="Enter your RuneScape username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    className="flex-1 px-4 py-2 bg-gray-900 border border-gray-600 rounded-md text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+                  />
+                  <button
+                    type="submit"
+                    disabled={!username || loading}
+                    className="px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-md font-semibold transition-colors"
+                  >
+                    {loading ? 'Loading...' : 'Fetch Stats'}
+                  </button>
+                </div>
+              </form>
             </div>
 
             {/* Error Message */}
