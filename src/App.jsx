@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import './App.css';
 import axios from 'axios';
-import { GoogleGenAI } from '@google/genai'
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 function App() {
   const [username, setUsername] = useState('');
@@ -100,6 +100,11 @@ function App() {
     // Check if we have an API key (either from env or user input)
     const geminiApiKey = import.meta.env.VITE_GEMINI_API_KEY || apiKey;
 
+    console.log('Environment key:', import.meta.env.VITE_GEMINI_API_KEY);
+    console.log('State key:', apiKey);
+    console.log('Final geminiApiKey:', geminiApiKey);
+    console.log('Key exists?', !!geminiApiKey);
+
     if (!geminiApiKey) {
       setShowApiKeyInput(true);
       return;
@@ -109,21 +114,48 @@ function App() {
 
     try {
       // Initialize the Gemini API
-      const genAI = new GoogleGenAI(geminiApiKey);
+      const genAI = new GoogleGenerativeAI(geminiApiKey);
       const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
       // Prepare the prompt with player data
       const prompt = `
-        You are an Old School RuneScape activity advisor. Based on this player's stats and recent activity, suggest an engaging activity they might enjoy.
-        
-        Player Stats:
-        ${playerData.skills.map(s => `${s.name}: Level ${s.level}`).join(', ')}
-        
-        Recent Activity:
-        ${playerData.recentActivities.join(', ')}
-        
-        Consider their skill levels, what they've been training recently, and suggest something fun or beneficial they could do next. Keep the suggestion concise and specific to OSRS content.
-      `;
+      You are an expert Old School RuneScape activity advisor. Based on this player's stats and recent activity, suggest ONE specific activity they should do next.
+
+      Player: ${playerData.displayName}
+      
+      Current Stats:
+      ${playerData.skills.map(s => `${s.name}: Level ${s.level}`).join(', ')}
+      
+      Recent Activity (past week):
+      ${playerData.recentActivities.join('\n')}
+      
+      IMPORTANT CONTEXT FOR RECOMMENDATIONS:
+      - Skills under level 50 are considered low and easy to train
+      - Skills 50-70 are mid-level, 70-90 are high-level, 90+ are end-game
+      - Combat skills: Attack, Strength, Defence, Ranged, Magic, Prayer
+      - Profitable skills: Slayer (85+ for good money), Runecraft (77+ for bloods), Hunter (80+ for chins)
+      - AFK skills: Fishing, Woodcutting, Mining
+      - Expensive but fast skills: Construction, Prayer, Herblore
+      
+      GOOD RECOMMENDATIONS BASED ON LEVELS:
+      - If Slayer is 70+: Suggest specific slayer bosses (Gargoyles at 75, Nechryaels at 80, Abyssal Demons at 85)
+      - If Runecraft is low (<77): Suggest Guardians of the Rift minigame
+      - If combat stats are 70+ but Fire Cape not mentioned: Suggest attempting Fight Caves
+      - If combat stats are 80+: Suggest specific bosses like Barrows, Zulrah (75+ Magic/Range), Vorkath (high range)
+      - If Agility is low: Suggest rooftop courses for the player's level
+      - If Construction is low (<83): Mention that with 83 + boosts, they can build all the important POH features
+      - If stats are generally high level: Suggest working toward Quest Cape or Achievement Diaries
+      - Herb runs and birdhouse runs are always good to do, regardless of how high the player's levels are.
+      
+      AVOID:
+      - Generic suggestions like "train your lowest skill"
+      - Suggesting content way above their level
+      - Recommending the same skill they've been training recently
+      - Suggesting prayer training if the player has 77, as this is the highest level needed for a prayer. Only suggest prayer if they have 90+ in most other combat skills.
+      - Trying to recommend a specific training method for skills where you are processing items. Instead, post the link to the OSRS Wiki training page for that skill.
+      
+      Based on their recent activity, suggest something different but appropriate for their levels. Be specific about WHERE to train and WHAT method to use. Keep your response concise (2-3 sentences max).
+    `;
 
       const result = await model.generateContent(prompt);
       const response = result.response;
