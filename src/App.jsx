@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import './App.css';
 import axios from 'axios';
+import { GoogleGenAI } from '@google/genai'
 
 function App() {
   const [username, setUsername] = useState('');
@@ -96,26 +97,45 @@ function App() {
   };
 
   const getAIRecommendation = async () => {
-    if (!apiKey) {
+    // Check if we have an API key (either from env or user input)
+    const geminiApiKey = import.meta.env.VITE_GEMINI_API_KEY || apiKey;
+
+    if (!geminiApiKey) {
       setShowApiKeyInput(true);
       return;
     }
 
     setLoading(true);
 
-    // Mock AI response for demo
-    const mockRecommendations = [
-      "Based on your recent Slayer gains and Vorkath kills, you're clearly enjoying combat! However, I notice your Runecraft is only level 50. Consider trying the Guardians of the Rift minigame - it's much more engaging than traditional RC training and offers great rewards!",
-      "Your combat stats are impressive! Since you've been grinding Vorkath, why not take a break and work on your Construction? Level 83 unlocks the Ornate Pool which would greatly benefit your bossing efficiency.",
-      "I see you're close to 88 Agility! Push for level 90 to unlock the Ardougne Rooftop Course. With your high Slayer level, you could also try Cerberus for a chance at Primordial Boots.",
-      "Your Farming is at 73 - perfect for starting herb runs! With Ranarr herbs, you could make significant profit while training. Between runs, your Mining could use some love - try Volcanic Mine for engaging group content!"
-    ];
+    try {
+      // Initialize the Gemini API
+      const genAI = new GoogleGenAI(geminiApiKey);
+      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
-    setTimeout(() => {
-      const randomRec = mockRecommendations[Math.floor(Math.random() * mockRecommendations.length)];
-      setRecommendation(randomRec);
+      // Prepare the prompt with player data
+      const prompt = `
+        You are an Old School RuneScape activity advisor. Based on this player's stats and recent activity, suggest an engaging activity they might enjoy.
+        
+        Player Stats:
+        ${playerData.skills.map(s => `${s.name}: Level ${s.level}`).join(', ')}
+        
+        Recent Activity:
+        ${playerData.recentActivities.join(', ')}
+        
+        Consider their skill levels, what they've been training recently, and suggest something fun or beneficial they could do next. Keep the suggestion concise and specific to OSRS content.
+      `;
+
+      const result = await model.generateContent(prompt);
+      const response = result.response;
+      const recommendation = response.text();
+
+      setRecommendation(recommendation);
+    } catch (error) {
+      console.error('AI recommendation error:', error);
+      setRecommendation('Failed to get AI recommendation. Please check your API key and try again.');
+    } finally {
       setLoading(false);
-    }, 1500);
+    }
   };
 
   const getSkillColor = (level) => {
