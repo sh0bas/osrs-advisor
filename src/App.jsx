@@ -296,6 +296,13 @@ function App() {
               <p>Note: If the player hasn't been tracked recently, you may need to update them on WiseOldMan first.</p>
             </div>
 
+            {/* AI disclaimer */}
+            <div className="bg-gray-800 border border-gray-700 rounded-lg p-4 mb-6 max-w-2xl mx-auto">
+              <p className="text-gray-400">
+                Disclaimer: The AI can make mistakes and give inaccurate information.
+              </p>
+            </div>
+
             {/* AI Recommendation */}
             {recommendation && (
               <div className="bg-gradient-to-r from-purple-900 to-blue-900 rounded-lg p-6 border border-purple-700 max-w-2xl mx-auto">
