@@ -167,6 +167,7 @@ function App() {
       - Recommending the same skill they've been training recently
       - Suggesting prayer training if the player has 77, as this is the highest level needed for a prayer. Only suggest prayer if they have 90+ in most other combat skills.
       - Trying to recommend a specific training method for skills where you are processing items. Instead, post the link to the OSRS Wiki training page for that skill.
+      - Suggesting quests and/or achievement diary tasks, as these aren't tracked by WiseOldMan.
       
       Based on their recent activity, suggest something different but appropriate for their levels. Be specific about WHERE to train and WHAT method to use. Keep your response concise (2-3 sentences max).
     `;
