@@ -152,10 +152,9 @@ function App() {
       - Expensive but fast skills: Construction, Prayer, Herblore
       
       GOOD RECOMMENDATIONS BASED ON LEVELS:
-      - If Slayer is 70+: Suggest specific slayer bosses (Gargoyles at 75, Nechryaels at 80, Abyssal Demons at 85)
+      - If Slayer is lagging behind the rest of the player's combat stats: Suggest training Slayer
       - If Runecraft is low (<77): Suggest Guardians of the Rift minigame
-      - If combat stats are 70+ but Fire Cape not mentioned: Suggest attempting Fight Caves
-      - If combat stats are 80+: Suggest specific bosses like Barrows, Zulrah (75+ Magic/Range), Vorkath (high range)
+      - If combat stats are 80+: Suggest specific bosses.
       - If Agility is low: Suggest rooftop courses for the player's level
       - If Construction is low (<83): Mention that with 83 + boosts, they can build all the important POH features
       - If stats are generally high level: Suggest working toward Quest Cape or Achievement Diaries
@@ -165,6 +164,7 @@ function App() {
       - Generic suggestions like "train your lowest skill"
       - Suggesting content way above their level
       - Recommending the same skill they've been training recently
+      - Avoid suggesting Fight Caves unless mentioned as a goal for players with base 60s in combat or lower.
       - Suggesting prayer training if the player has 77, as this is the highest level needed for a prayer. Only suggest prayer if they have 90+ in most other combat skills.
       - Trying to recommend a specific training method for skills where you are processing items. Instead, post the link to the OSRS Wiki training page for that skill.
       - Suggesting quests and/or achievement diary tasks, as these aren't tracked by WiseOldMan.
@@ -186,12 +186,17 @@ function App() {
   };
 
   const getSkillColor = (level) => {
-    if (level >= 99) return 'bg-yellow-500';
-    if (level >= 90) return 'bg-purple-500';
-    if (level >= 80) return 'bg-blue-500';
-    if (level >= 70) return 'bg-green-500';
-    if (level >= 60) return 'bg-yellow-600';
-    return 'bg-gray-600';
+    if (level >= 99) return 'bg-orange-500'; // Zenyte (#FF8920)
+    if (level >= 90) return 'bg-gray-800'; // Onyx (#2D2D2D)
+    if (level >= 80) return 'bg-purple-600'; // Dragonstone (#861CD4)
+    if (level >= 70) return 'bg-cyan-100'; // Diamond (#C8E8E6)
+    if (level >= 60) return 'bg-red-500'; // Ruby (#EC2323)
+    if (level >= 50) return 'bg-green-500'; // Emerald (#1BC92C)
+    if (level >= 40) return 'bg-blue-600'; // Sapphire (#1524F9)
+    if (level >= 30) return 'bg-pink-500'; // Red Topaz (#E546FC)
+    if (level >= 20) return 'bg-teal-200'; // Jade (#A7EED4)
+    if (level >= 10) return 'bg-amber-100'; // Opal (#FAEBD7)
+    return 'bg-gray-600'; // Below 10
   };
 
   return (
