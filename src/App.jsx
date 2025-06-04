@@ -2,12 +2,14 @@ import { useState } from 'react';
 import './App.css';
 import axios from 'axios';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import LoadingSpinner from './components/LoadingSpinner';
 
 function App() {
   const [username, setUsername] = useState('');
   const [playerData, setPlayerData] = useState(null);
   const [recommendation, setRecommendation] = useState('');
   const [loading, setLoading] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
   const [apiKey, setApiKey] = useState('');
   const [showApiKeyInput, setShowApiKeyInput] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -124,7 +126,7 @@ function App() {
       return;
     }
 
-    setLoading(true);
+    setAiLoading(true);
 
     try {
       // Initialize the Gemini API
@@ -181,7 +183,7 @@ function App() {
       console.error('AI recommendation error:', error);
       setRecommendation('Failed to get AI recommendation. Please check your API key and try again.');
     } finally {
-      setLoading(false);
+      setAiLoading(false);
     }
   };
 
@@ -265,29 +267,33 @@ function App() {
 
             {/* Username Input */}
             <div className="bg-gray-800 rounded-lg p-6 mb-6 border border-gray-700 max-w-2xl mx-auto">
-              <form onSubmit={(e) => {
-                e.preventDefault();
-                if (username && !loading) {
-                  fetchPlayerData();
-                }
-              }}>
-                <div className="flex gap-4">
-                  <input
-                    type="text"
-                    placeholder="Enter your RuneScape username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    className="flex-1 px-4 py-2 bg-gray-900 border border-gray-600 rounded-md text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
-                  />
-                  <button
-                    type="submit"
-                    disabled={!username || loading}
-                    className="px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-md font-semibold transition-colors"
-                  >
-                    {loading ? 'Loading...' : 'Fetch Stats'}
-                  </button>
-                </div>
-              </form>
+              {!loading ? (
+                <form onSubmit={(e) => {
+                  e.preventDefault();
+                  if (username && !loading) {
+                    fetchPlayerData();
+                  }
+                }}>
+                  <div className="flex gap-4">
+                    <input
+                      type="text"
+                      placeholder="Enter your RuneScape username"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      className="flex-1 px-4 py-2 bg-gray-900 border border-gray-600 rounded-md text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+                    />
+                    <button
+                      type="submit"
+                      disabled={!username || loading}
+                      className="px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-md font-semibold transition-colors"
+                    >
+                      Fetch Stats
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                <LoadingSpinner message="Fetching player data" />
+              )}
             </div>
 
             {/* Error Message */}
@@ -310,20 +316,26 @@ function App() {
             </div>
 
             {/* AI Recommendation */}
-            {recommendation && (
+            {(recommendation || aiLoading) && (
               <div className="bg-gradient-to-r from-purple-900 to-blue-900 rounded-lg p-6 border border-purple-700 max-w-2xl mx-auto">
-                <h2 className="text-2xl font-bold mb-4 text-yellow-400">
-                  🤖 AI Recommendation
-                </h2>
-                <p className="text-lg leading-relaxed text-gray-100">
-                  {recommendation}
-                </p>
-                <button
-                  onClick={getAIRecommendation}
-                  className="mt-4 px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-md text-sm"
-                >
-                  Get Another Suggestion
-                </button>
+                {aiLoading ? (
+                  <LoadingSpinner message="Consulting AI" />
+                ) : (
+                  <>
+                    <h2 className="text-2xl font-bold mb-4 text-yellow-400">
+                      🤖 AI Recommendation
+                    </h2>
+                    <p className="text-lg leading-relaxed text-gray-100">
+                      {recommendation}
+                    </p>
+                    <button
+                      onClick={getAIRecommendation}
+                      className="mt-4 px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-md text-sm"
+                    >
+                      Get Another Suggestion
+                    </button>
+                  </>
+                )}
               </div>
             )}
           </div>
@@ -375,9 +387,10 @@ function App() {
 
                   <button
                     onClick={getAIRecommendation}
-                    className="w-full px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-md font-semibold transition-all glow"
+                    disabled={aiLoading}
+                    className="w-full px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed rounded-md font-semibold transition-all glow"
                   >
-                    Get AI Recommendation
+                    {aiLoading ? 'Generating...' : 'Get AI Recommendation'}
                   </button>
                 </div>
               </div>
