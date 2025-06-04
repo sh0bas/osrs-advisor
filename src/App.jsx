@@ -186,16 +186,16 @@ function App() {
   };
 
   const getSkillColor = (level) => {
-    if (level >= 99) return 'bg-orange-500'; // Zenyte (#FF8920)
-    if (level >= 90) return 'bg-gray-800'; // Onyx (#2D2D2D)
-    if (level >= 80) return 'bg-purple-600'; // Dragonstone (#861CD4)
-    if (level >= 70) return 'bg-cyan-100'; // Diamond (#C8E8E6)
-    if (level >= 60) return 'bg-red-500'; // Ruby (#EC2323)
-    if (level >= 50) return 'bg-green-500'; // Emerald (#1BC92C)
-    if (level >= 40) return 'bg-blue-600'; // Sapphire (#1524F9)
-    if (level >= 30) return 'bg-pink-500'; // Red Topaz (#E546FC)
-    if (level >= 20) return 'bg-teal-200'; // Jade (#A7EED4)
-    if (level >= 10) return 'bg-amber-100'; // Opal (#FAEBD7)
+    if (level >= 99) return 'bg-orange-500'; // Zenyte
+    if (level >= 90) return 'bg-gray-800'; // Onyx
+    if (level >= 80) return 'bg-purple-600'; // Dragonstone
+    if (level >= 70) return 'bg-cyan-100'; // Diamond
+    if (level >= 60) return 'bg-red-500'; // Ruby
+    if (level >= 50) return 'bg-green-500'; // Emerald
+    if (level >= 40) return 'bg-blue-600'; // Sapphire
+    if (level >= 30) return 'bg-pink-500'; // Red Topaz
+    if (level >= 20) return 'bg-teal-200'; // Jade
+    if (level >= 10) return 'bg-amber-100'; // Opal
     return 'bg-gray-600'; // Below 10
   };
 
