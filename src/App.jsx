@@ -154,7 +154,7 @@ function App() {
       - Expensive but fast skills: Construction, Prayer, Herblore
       
       GOOD RECOMMENDATIONS BASED ON LEVELS:
-      - If Slayer is lagging behind the rest of the player's combat stats: Suggest training Slayer
+      - If Slayer is lagging behind the rest of the player's combat stats (10 levels or lower than the lowest combat stat): Suggest training Slayer
       - If Runecraft is low (<77): Suggest Guardians of the Rift minigame
       - If combat stats are 80+: Suggest specific bosses.
       - If Agility is low: Suggest rooftop courses for the player's level
