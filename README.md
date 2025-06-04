@@ -16,14 +16,6 @@ An AI-powered web application that analyzes Old School RuneScape player stats an
 - **Skill Progress Visualization**: Color-coded skill levels based on in-game gem tiers
 - **Quick Access Tools**: Sidebar with links to essential OSRS resources
 
-## 🚀 Demo
-
-### Screenshots
-- Fetch player stats by entering username
-- View comprehensive skill overview with color-coded levels
-- Get AI-generated activity recommendations
-- Track recent gains and achievements
-
 ## 🛠️ Technologies Used
 
 - **React 19.1.0** - UI framework
